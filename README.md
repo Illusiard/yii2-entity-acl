@@ -208,7 +208,7 @@ use illusiard\entity_acl\AclService;
 $req = new AccessRequest(
     userId: 1,
     entity: 'post',
-    op: 'read',
+    operation: 'read',
     recordId: '10',
     context: [
         'groupId' => 5,

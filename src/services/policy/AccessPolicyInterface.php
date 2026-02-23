@@ -7,7 +7,7 @@ use illusiard\entity_acl\models\dto\AccessRequest;
 
 interface AccessPolicyInterface
 {
-    public function can(AccessRequest $req): bool;
+    public function can(AccessRequest $request): bool;
 
-    public function decide(AccessRequest $req, bool $withTrace = false): AccessDecision;
+    public function decide(AccessRequest $request, bool $withTrace = false): AccessDecision;
 }

@@ -57,21 +57,21 @@ class UnixLikeAclPolicyOwnerSubjectTest extends TestCase
         // ownerId приходит НЕ напрямую в subject,
         // а через resolver -> context['ownerId']
         $reqAllowed = new AccessRequest(
-            userId: 10,
-            entity: 'post',
-            op: 'read',
-            recordId: '100',
-            context: [
+            userId   : 10,
+            entity   : 'post',
+            operation: 'read',
+            recordId : '100',
+            context  : [
                 'ownerId' => 42,
             ]
         );
 
         $reqDenied = new AccessRequest(
-            userId: 10,
-            entity: 'post',
-            op: 'read',
-            recordId: '101',
-            context: [
+            userId   : 10,
+            entity   : 'post',
+            operation: 'read',
+            recordId : '101',
+            context  : [
                 'ownerId' => 99,
             ]
         );

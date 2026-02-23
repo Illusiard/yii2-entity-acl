@@ -30,29 +30,29 @@ final class UnixLikeAclPolicy implements AccessPolicyInterface
         private readonly ConditionEngine $engine,
     ) {}
 
-    public function can(AccessRequest $req): bool
+    public function can(AccessRequest $request): bool
     {
-        return $this->decide($req)->allowed;
+        return $this->decide($request)->allowed;
     }
 
-    public function decide(AccessRequest $req, bool $withTrace = false): AccessDecision
+    public function decide(AccessRequest $request, bool $withTrace = false): AccessDecision
     {
         $trace = [];
-        $opMask = Acl::opToMask($req->op);
+        $operationMask = Acl::operationToMask($request->operation);
 
-        if ($opMask === 0) {
+        if ($operationMask === 0) {
             return new AccessDecision(false, 'default_deny', $trace);
         }
 
-        $recordId = $req->recordId !== null ? (string)$req->recordId : null;
+        $recordId = $request->recordId !== null ? (string)$request->recordId : null;
 
         // 1) base ACL from bes_acl_record (record first, then entity)
-        $acl = $this->engine->getStorage()->findAclRecord($req->entity, $recordId);
+        $acl = $this->engine->getStorage()->findAclRecord($request->entity, $recordId);
         $baseAllowed = false;
 
         if ($acl !== null) {
-            $subjectGroupId = $this->engine->getSubjectResolver()->resolveGroupId($req->userId, $req->context);
-            $subjectOwnerId = $this->engine->getSubjectResolver()->resolveOwnerId($req);
+            $subjectGroupId = $this->engine->getSubjectResolver()->resolveGroupId($request->userId, $request->context);
+            $subjectOwnerId = $this->engine->getSubjectResolver()->resolveOwnerId($request);
 
             $segment = 'other';
             $flags = $acl->otherFlags;
@@ -65,14 +65,14 @@ final class UnixLikeAclPolicy implements AccessPolicyInterface
                 $flags = $acl->groupFlags;
             }
 
-            $baseAllowed = (($flags & $opMask) !== 0);
+            $baseAllowed = (($flags & $operationMask) !== 0);
 
             if ($withTrace) {
                 $trace[] = [
                     'step' => 'base',
                     'segment' => $segment,
                     'flags' => $flags,
-                    'opMask' => $opMask,
+                    'opMask' => $operationMask,
                     'allowed' => $baseAllowed,
                     'scope' => $acl->recordId !== null ? 'record' : 'entity',
                 ];
@@ -82,38 +82,36 @@ final class UnixLikeAclPolicy implements AccessPolicyInterface
         }
 
         // 2) conditions: deny first, then allow
-        $conds = $this->engine->getStorage()->findConditions($req->entity, $recordId, $opMask);
+        $conditions = $this->engine->getStorage()->findConditions($request->entity, $recordId, $operationMask);
 
         $denyMatched = false;
         $allowMatched = false;
 
-        foreach ($conds as $cond) {
+        foreach ($conditions as $condition) {
             // subject filter
-            if (!$this->engine->evaluateSubject($cond->subject, $req)) {
+            if (!$this->engine->evaluateSubject($condition->subject, $request)) {
                 continue;
             }
 
             $localTrace = [];
-            if (!$this->engine->evaluateWhen($cond->when, $req, $localTrace)) {
+            if (!$this->engine->evaluateWhen($condition->when, $request, $localTrace)) {
                 continue;
             }
 
-            if ($cond->effect === 'deny') {
+            if ($condition->effect === 'deny') {
                 $denyMatched = true;
                 if ($withTrace) {
-                    $trace[] = ['step' => 'condition', 'id' => $cond->id, 'effect' => 'deny', 'matched' => true];
+                    $trace[] = ['step' => 'condition', 'id' => $condition->id, 'effect' => 'deny', 'matched' => true];
                 }
-                // deny wins сразу
+                //todo condition priority?..
                 return new AccessDecision(false, 'condition_deny', $trace);
             }
 
-            if ($cond->effect === 'allow') {
+            if ($condition->effect === 'allow') {
                 $allowMatched = true;
                 if ($withTrace) {
-                    $trace[] = ['step' => 'condition', 'id' => $cond->id, 'effect' => 'allow', 'matched' => true];
+                    $trace[] = ['step' => 'condition', 'id' => $condition->id, 'effect' => 'allow', 'matched' => true];
                 }
-                // allow не возвращаем сразу — вдруг ниже будет deny (но мы deny уже обработали выше)
-                // однако у нас deny checked first? мы в одном проходе; проще: продолжим, но deny приоритетом выше.
             }
         }
 

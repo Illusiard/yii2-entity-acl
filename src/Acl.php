@@ -17,9 +17,9 @@ final class Acl
     public const OPERATION_DELETE  = 'delete';
     public const OPERATION_UNKNOWN = 'unknown';
 
-    public static function opToMask(string $op): int
+    public static function operationToMask(string $operation): int
     {
-        return match ($op) {
+        return match ($operation) {
             self::OPERATION_LIST   => self::LIST,
             self::OPERATION_READ   => self::READ,
             self::OPERATION_CREATE => self::CREATE,
