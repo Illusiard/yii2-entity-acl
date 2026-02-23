@@ -4,6 +4,7 @@ namespace illusiard\entity_acl;
 
 use illusiard\entity_acl\services\conditions\ConditionEngine;
 use illusiard\entity_acl\services\conditions\handlers\AlwaysHandler;
+use illusiard\entity_acl\services\conditions\handlers\BetweenDateTimesHandler;
 use illusiard\entity_acl\services\conditions\handlers\DateRangeHandler;
 use illusiard\entity_acl\services\conditions\handlers\TimeWindowHandler;
 use illusiard\entity_acl\services\conditions\handlers\WeekdayInHandler;
@@ -31,6 +32,7 @@ final class Bootstrap implements BootstrapInterface
             new AlwaysHandler(),
             new TimeWindowHandler(),
             new DateRangeHandler(),
+            new BetweenDateTimesHandler(),
             new WeekdayInHandler(),
         ]);
 
