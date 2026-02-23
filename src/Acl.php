@@ -10,15 +10,22 @@ final class Acl
     public const UPDATE = 8;
     public const DELETE = 16;
 
+    public const OPERATION_LIST    = 'list';
+    public const OPERATION_READ    = 'read';
+    public const OPERATION_CREATE  = 'create';
+    public const OPERATION_UPDATE  = 'update';
+    public const OPERATION_DELETE  = 'delete';
+    public const OPERATION_UNKNOWN = 'unknown';
+
     public static function opToMask(string $op): int
     {
         return match ($op) {
-            'list'   => self::LIST,
-            'read'   => self::READ,
-            'create' => self::CREATE,
-            'update' => self::UPDATE,
-            'delete' => self::DELETE,
-            default  => 0,
+            self::OPERATION_LIST   => self::LIST,
+            self::OPERATION_READ   => self::READ,
+            self::OPERATION_CREATE => self::CREATE,
+            self::OPERATION_UPDATE => self::UPDATE,
+            self::OPERATION_DELETE => self::DELETE,
+            default                => 0,
         };
     }
 }
