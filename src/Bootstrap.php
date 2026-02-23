@@ -6,6 +6,7 @@ use illusiard\entity_acl\services\conditions\ConditionEngine;
 use illusiard\entity_acl\services\conditions\handlers\AlwaysHandler;
 use illusiard\entity_acl\services\conditions\handlers\DateRangeHandler;
 use illusiard\entity_acl\services\conditions\handlers\TimeWindowHandler;
+use illusiard\entity_acl\services\conditions\handlers\WeekdayInHandler;
 use illusiard\entity_acl\services\policy\UnixLikeAclPolicy;
 use illusiard\entity_acl\services\storage\DbAclStorage;
 use illusiard\entity_acl\services\subject\ContextSubjectResolver;
@@ -30,6 +31,7 @@ final class Bootstrap implements BootstrapInterface
             new AlwaysHandler(),
             new TimeWindowHandler(),
             new DateRangeHandler(),
+            new WeekdayInHandler(),
         ]);
 
         $policy = new UnixLikeAclPolicy($engine);
