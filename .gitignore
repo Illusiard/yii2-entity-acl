@@ -1,0 +1,69 @@
+# phpstorm project files
+.idea
+
+# X-Debug dummy file
+none
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# composer vendor dir
+/vendor
+
+# npm modules dir
+/node_modules
+
+# composer itself is not needed
+composer.phar
+
+# Mac DS_Store Files
+.DS_Store
+
+# phpunit itself is not needed
+phpunit.phar
+# local phpunit config
+/phpunit.xml
+.phpunit.cache
+
+# Docker
+docker-compose.override.yml
+docker/builds
+docker/.build.lock
+
+# Environments
+.env
+.build.env
+/envs
+
+# Configs
+config/db.php
+config/params.php
+config/web.php
+config/console.php
+config/common.php
+config/app-version
+
+commands/SandboxController.php
+
+/web/assets/*
+/web/.well-known/*
+!/web/assets/.create
+
+/runtime/*
+!/runtime/.create
+
+#robots
+web/robots.txt
+
+#htaccess
+web/.htaccess
+
+.yarn
