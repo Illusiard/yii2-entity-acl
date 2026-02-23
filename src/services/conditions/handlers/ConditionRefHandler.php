@@ -19,7 +19,7 @@ class ConditionRefHandler implements ConditionHandlerInterface
         return $type === 'conditionRef' || $type === 'condition';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         $ids = $payload['condition'] ?? $payload['ids'] ?? null;
 
@@ -35,26 +35,18 @@ class ConditionRefHandler implements ConditionHandlerInterface
             $ids = [$ids];
         }
 
+        $normalizedIds = [];
         foreach ($ids as $id) {
-            $id = (int)$id;
-            if ($id <= 0) {
+            $normalizedId = (int)$id;
+            if ($normalizedId <= 0) {
                 return false;
             }
 
-            $cond = $engine->getStorage()->findConditionById($id);
-            if ($cond === null || !$cond->enabled) {
-                return false;
-            }
-
-            if (!$engine->evaluateSubject($cond->subject, $req)) {
-                return false;
-            }
-
-            if (!$engine->evaluateWhen($cond->when, $req)) {
-                return false;
-            }
+            $normalizedIds[] = $normalizedId;
         }
 
-        return true;
+        return $engine->evaluateWhen([
+            ['condition' => $normalizedIds],
+        ], $request);
     }
 }

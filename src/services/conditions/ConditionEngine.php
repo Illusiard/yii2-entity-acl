@@ -10,6 +10,8 @@ final class ConditionEngine
 {
     /** @var ConditionHandlerInterface[] */
     private array $handlers = [];
+    /** @var array<int, bool> */
+    private array $visitedConditionIds = [];
 
     public function __construct(
         private readonly AclStorageInterface $storage,
@@ -32,7 +34,7 @@ final class ConditionEngine
             switch ($key) {
                 case 'userId':
                 case 'user_id':
-                    if ((int)$req->userId !== (int)$value) {
+                    if ($req->userId !== (int)$value) {
                         return false;
                     }
                     break;
@@ -40,7 +42,7 @@ final class ConditionEngine
                 case 'groupId':
                 case 'group_id':
                     $gid = $this->subjectResolver->resolveGroupId($req->userId, $req->context);
-                    if ($gid === null || (int)$gid !== (int)$value) {
+                    if ($gid !== (int)$value) {
                         return false;
                     }
                     break;
@@ -48,13 +50,14 @@ final class ConditionEngine
                 case 'ownerId':
                 case 'owner_id':
                     $oid = $this->subjectResolver->resolveOwnerId($req);
-                    if ($oid === null || (int)$oid !== (int)$value) {
+                    if ($oid !== (int)$value) {
                         return false;
                     }
                     break;
 
                 default:
                     //неизвестный subject-ключ
+                    //todo roles, departments, возможность подключить внешние resolver'ы
                     return false;
             }
         }
@@ -77,16 +80,7 @@ final class ConditionEngine
             // ссылка на другие conditions
             if (isset($item['condition']) && is_array($item['condition'])) {
                 foreach ($item['condition'] as $condId) {
-                    $condId = (int)$condId;
-                    $cond   = $this->storage->findConditionById($condId);
-                    if ($cond === null || !$cond->enabled) {
-                        return false;
-                    }
-
-                    if (!$this->evaluateSubject($cond->subject, $req)) {
-                        return false;
-                    }
-                    if (!$this->evaluateWhen($cond->when, $req, $trace)) {
+                    if (!$this->evaluateConditionRef((int)$condId, $req, $trace)) {
                         return false;
                     }
                 }
@@ -126,5 +120,37 @@ final class ConditionEngine
     public function getSubjectResolver(): SubjectResolverInterface
     {
         return $this->subjectResolver;
+    }
+
+    private function evaluateConditionRef(int $conditionId, AccessRequest $req, array &$trace = []): bool
+    {
+        if ($conditionId <= 0) {
+            return false;
+        }
+
+        if (isset($this->visitedConditionIds[$conditionId])) {
+            return false;
+        }
+
+        $this->visitedConditionIds[$conditionId] = true;
+
+        try {
+            $cond = $this->storage->findConditionById($conditionId);
+            if ($cond === null || !$cond->enabled) {
+                return false;
+            }
+
+            if (!$this->evaluateSubject($cond->subject, $req)) {
+                return false;
+            }
+
+            if (!$this->evaluateWhen($cond->when, $req, $trace)) {
+                return false;
+            }
+
+            return true;
+        } finally {
+            unset($this->visitedConditionIds[$conditionId]);
+        }
     }
 }

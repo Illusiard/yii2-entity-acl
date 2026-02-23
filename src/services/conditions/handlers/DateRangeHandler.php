@@ -14,7 +14,7 @@ final class DateRangeHandler implements ConditionHandlerInterface
         return $type === 'betweenDates';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         $from = (string)($payload['from'] ?? '');
         $to   = (string)($payload['to'] ?? '');

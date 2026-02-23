@@ -20,13 +20,13 @@ final class UserIdHandler implements ConditionHandlerInterface
         return $type === 'userId';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         $expected = $payload['value'] ?? $payload['userId'] ?? $payload['user_id'] ?? $payload['id'] ?? null;
         if ($expected === null) {
             return false;
         }
 
-        return (int)$req->userId === (int)$expected;
+        return $request->userId === (int)$expected;
     }
 }

@@ -15,7 +15,7 @@ final class WeekdayInHandler implements ConditionHandlerInterface
         return $type === 'weekdayIn';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         if (!isset($payload['days']) || !is_array($payload['days'])) {
             return false;

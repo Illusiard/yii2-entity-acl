@@ -13,13 +13,13 @@ final class TimeWindowHandler implements ConditionHandlerInterface
         return $type === 'betweenHours';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         $from = (int)($payload['from'] ?? 0);
         $to   = (int)($payload['to'] ?? 24);
 
         // timezone можно передавать в context, иначе PHP default
-        $tz = $req->context['timezone'] ?? null;
+        $tz = $request->context['timezone'] ?? null;
         if (is_string($tz)) {
             $old = date_default_timezone_get();
             date_default_timezone_set($tz);

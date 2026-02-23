@@ -24,14 +24,14 @@ final class GroupIdHandler implements ConditionHandlerInterface
         return $type === 'groupId';
     }
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool
     {
         $expected = $payload['value'] ?? $payload['groupId'] ?? $payload['group_id'] ?? $payload['id'] ?? null;
         if ($expected === null) {
             return false;
         }
 
-        $actual = $req->context['groupId'] ?? $req->context['group_id'] ?? null;
+        $actual = $request->context['groupId'] ?? $request->context['group_id'] ?? null;
         if ($actual === null) {
             return false;
         }

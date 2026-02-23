@@ -8,5 +8,5 @@ interface ConditionHandlerInterface
 {
     public function supports(string $type): bool;
 
-    public function evaluate(array $payload, AccessRequest $req, ConditionEngine $engine): bool;
+    public function evaluate(array $payload, AccessRequest $request, ConditionEngine $engine): bool;
 }
