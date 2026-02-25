@@ -33,7 +33,7 @@ final class EntityAclAdapter implements EntityAclAdapterInterface
         return $this->can($userId, $entity, Acl::OPERATION_DELETE, $recordId, $context);
     }
 
-    private function can(
+    public function can(
         int $userId,
         string $entity,
         string $operation,
