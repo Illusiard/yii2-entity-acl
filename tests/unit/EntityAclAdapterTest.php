@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class EntityAclAdapterTest extends TestCase
 {
-    public function testSmokeReadAndUpdate(): void
+    public function testSmokeReadUpdateRestoreAndPermanentDelete(): void
     {
         $storage = new FakeAclStorage();
         $storage->setAcl('post', null, new AclRecordRow(
@@ -22,7 +22,7 @@ class EntityAclAdapterTest extends TestCase
             recordId: null,
             ownerFlags: 0,
             groupFlags: 0,
-            otherFlags: Acl::READ,
+            otherFlags: Acl::READ | Acl::RESTORE | Acl::PERMANENT_DELETE,
             ownerId: null,
             groupId: null,
             priority: 0
@@ -36,5 +36,7 @@ class EntityAclAdapterTest extends TestCase
 
         $this->assertTrue($adapter->canRead(1, 'post', 10));
         $this->assertFalse($adapter->canUpdate(1, 'post', 10));
+        $this->assertTrue($adapter->canRestore(1, 'post', 10));
+        $this->assertTrue($adapter->canPermanentDelete(1, 'post', 10));
     }
 }

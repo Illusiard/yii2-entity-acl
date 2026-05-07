@@ -50,4 +50,14 @@ final class EntityAclAdapter implements EntityAclAdapterInterface
 
         return AclService::instance()->getPolicy()->can($request);
     }
+
+    public function canRestore(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool
+    {
+        return $this->can($userId, $entity, Acl::OPERATION_RESTORE, $recordId, $context);
+    }
+
+    public function canPermanentDelete(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool
+    {
+        return $this->can($userId, $entity, Acl::OPERATION_PERMANENT_DELETE, $recordId, $context);
+    }
 }

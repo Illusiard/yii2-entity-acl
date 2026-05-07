@@ -13,4 +13,8 @@ interface EntityAclAdapterInterface
     public function canUpdate(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool;
 
     public function canDelete(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool;
+
+    public function canRestore(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool;
+
+    public function canPermanentDelete(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool;
 }
