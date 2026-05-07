@@ -4,6 +4,7 @@ namespace illusiard\entity_acl\services\integration;
 
 use illusiard\entity_acl\Acl;
 use illusiard\entity_acl\AclService;
+use illusiard\entity_acl\models\dto\AccessDecision;
 use illusiard\entity_acl\models\dto\AccessRequest;
 
 final class EntityAclAdapter implements EntityAclAdapterInterface
@@ -59,5 +60,18 @@ final class EntityAclAdapter implements EntityAclAdapterInterface
     public function canPermanentDelete(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool
     {
         return $this->can($userId, $entity, Acl::OPERATION_PERMANENT_DELETE, $recordId, $context);
+    }
+
+    public function decide(int $userId, string $entity, mixed $operation, int|string|null $recordId = null, array $context = [], bool $withTrace = false): AccessDecision
+    {
+        $request = new AccessRequest(
+            userId: $userId,
+            entity: $entity,
+            operation: $operation,
+            recordId: $recordId !== null ? (string)$recordId : null,
+            context: $context
+        );
+
+        return AclService::instance()->getPolicy()->decide($request, $withTrace);
     }
 }
