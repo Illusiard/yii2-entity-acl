@@ -62,7 +62,7 @@ final class EntityAclAdapter implements EntityAclAdapterInterface
         return $this->can($userId, $entity, Acl::OPERATION_PERMANENT_DELETE, $recordId, $context);
     }
 
-    public function decide(int $userId, string $entity, mixed $operation, int|string|null $recordId = null, array $context = [], bool $withTrace = false): AccessDecision
+    public function decide(int $userId, string $entity, string $operation, int|string|null $recordId = null, array $context = [], bool $withTrace = false): AccessDecision
     {
         $request = new AccessRequest(
             userId: $userId,

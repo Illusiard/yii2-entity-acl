@@ -2,9 +2,7 @@
 
 namespace illusiard\entity_acl\models;
 
-use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -24,11 +22,13 @@ use yii\db\Expression;
  */
 class AclCondition extends ActiveRecord
 {
+    #[\Override]
     public static function tableName(): string
     {
         return '{{%bes_acl_condition}}';
     }
 
+    #[\Override]
     public function rules(): array
     {
         return [
@@ -44,6 +44,7 @@ class AclCondition extends ActiveRecord
         ];
     }
 
+    #[\Override]
     public function attributeLabels(): array
     {
         return [
@@ -62,6 +63,7 @@ class AclCondition extends ActiveRecord
         ];
     }
 
+    #[\Override]
     public function behaviors(): array
     {
         return [

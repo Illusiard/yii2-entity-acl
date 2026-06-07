@@ -20,5 +20,5 @@ interface EntityAclAdapterInterface
 
     public function canPermanentDelete(int $userId, string $entity, int|string|null $recordId = null, array $context = []): bool;
 
-    public function decide(int $userId, string $entity, mixed $operation, ?string $recordId = null, array $context = [], bool $withTrace = false): AccessDecision;
+    public function decide(int $userId, string $entity, string $operation, int|string|null $recordId = null, array $context = [], bool $withTrace = false): AccessDecision;
 }

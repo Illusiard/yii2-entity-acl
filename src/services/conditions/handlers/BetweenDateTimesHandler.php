@@ -3,6 +3,7 @@
 namespace illusiard\entity_acl\services\conditions\handlers;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use Throwable;
 use illusiard\entity_acl\models\dto\AccessRequest;
@@ -47,13 +48,18 @@ final class BetweenDateTimesHandler implements ConditionHandlerInterface
             return false;
         }
 
-        try {
-            $now = new DateTimeImmutable('now', $timezone);
-        } catch (Throwable) {
-            return false;
-        }
+        $now = $this->resolveNow($payload['now'] ?? null, $timezone);
 
         return $now >= $from && $now <= $to;
+    }
+
+    private function resolveNow(mixed $value, DateTimeZone $timezone): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($value)->setTimezone($timezone);
+        }
+
+        return new DateTimeImmutable('now', $timezone);
     }
 
     private function parseDateTime(string $value, DateTimeZone $timezone): ?DateTimeImmutable

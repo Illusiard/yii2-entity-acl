@@ -26,7 +26,7 @@ final class AclService
 
     public static function instance(): self
     {
-        if (!self::$instance) {
+        if (self::$instance === null) {
             throw new RuntimeException('AclService is not initialized. Add AclBootstrap and module config.');
         }
 
